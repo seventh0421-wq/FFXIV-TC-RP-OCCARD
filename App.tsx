@@ -220,7 +220,7 @@ const App: React.FC = () => {
 
             <div className="mt-8 pt-6 border-t border-slate-800 flex items-center justify-between">
               <div className="text-[12px] text-slate-500 tech-font">
-                作者：煙蘿＠奧汀
+                作者：閻羅@奧汀
               </div>
               <button
                 onClick={() => setShowConsent(false)}
@@ -241,7 +241,7 @@ const App: React.FC = () => {
               Ξ
             </div>
             <div>
-              <h1 className="text-2xl font-bold tracking-widest tech-font text-white">EORZEA_CARD_MAKER</h1>
+              <h1 className="text-2xl font-bold tracking-widest tech-font text-white">FFXIV TC RP CARD｜水晶名片</h1>
               <p className="text-[11px] text-cyan-500 font-mono tracking-tighter uppercase">正在初始化安全連接... v3.5.0</p>
             </div>
           </div>
