@@ -65,12 +65,22 @@ export const BORDER_TYPES: { id: BorderStyle; name: string }[] = [
   { id: 'dotted', name: '點點 Dotted' }
 ];
 
+export const SERVERS = [
+  '鳳凰',
+  '伊弗利特',
+  '利維坦',
+  '迦樓羅',
+  '巴哈姆特',
+  '奧汀',
+  '泰坦'
+];
+
 export const JOBS = [
-  '騎士 (PLD)', '戰士 (WAR)', '暗黑騎士 (DRK)', '絕槍戰士 (GNB)',
-  '白魔道士 (WHM)', '學者 (SCH)', '占星術士 (AST)', '賢者 (SGE)',
-  '武僧 (MNK)', '龍騎士 (DRG)', '忍者 (NIN)', '武士 (SAM)', '釩龍騎士 (RPR)', '蛇使 (VPR)',
-  '吟遊詩人 (BRD)', '機工士 (MCH)', '舞者 (DNC)',
-  '黑魔道士 (BLM)', '召喚師 (SMN)', '赤魔道士 (RDM)', '畫家 (PCT)'
+  '騎士', '戰士', '暗黑騎士', '絕槍戰士',
+  '白魔道士', '學者', '占星術師', '賢者',
+  '武僧', '龍騎士', '忍者', '武士', '奪魂者', '毒蛇劍士',
+  '吟遊詩人', '機工士', '舞者',
+  '黑魔道士', '召喚師', '赤魔道士', '繪靈法師'
 ];
 
 export const RACES = [

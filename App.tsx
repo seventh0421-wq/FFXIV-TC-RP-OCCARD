@@ -4,7 +4,7 @@ import { toPng } from 'html-to-image';
 import Card from './components/Card';
 import TraitSelector from './components/SliderInput';
 import { CharacterInfo, Traits, Orientation, ImageTransform, FrameStyle, BorderStyle } from './types';
-import { FRAME_STYLES, JOBS, RACES, FONT_OPTIONS, BORDER_TYPES } from './constants';
+import { FRAME_STYLES, JOBS, RACES, FONT_OPTIONS, BORDER_TYPES, SERVERS } from './constants';
 import { improveDescription } from './services/geminiService';
 
 const initialInfo: CharacterInfo = {
@@ -241,6 +241,14 @@ const App: React.FC = () => {
                 <div>
                   <h4 className="text-white font-bold mb-1">社群分享</h4>
                   <p className="opacity-70">歡迎將製作好的角色卡分享至社群媒體！</p>
+                </div>
+              </div>
+
+              <div className="flex gap-4">
+                <div className="text-cyan-500 font-bold tech-font mt-1">05</div>
+                <div>
+                  <h4 className="text-white font-bold mb-1">設備建議</h4>
+                  <p className="opacity-70">建議使用電腦/桌面端瀏覽器開啟網頁，以獲得最佳的製作體驗與精確的卡片輸出效果。</p>
                 </div>
               </div>
             </div>
@@ -495,7 +503,7 @@ const App: React.FC = () => {
               {[
                 { label: '角色姓名 NAME', field: 'name', placeholder: '輸入角色姓名' },
                 { label: '角色格言 MOTTO', field: 'motto', placeholder: '輸入角色座右銘' },
-                { label: '伺服器 SERVER', field: 'server', placeholder: '例如: Bahamut' },
+                { label: '伺服器 SERVER', field: 'server', type: 'select', options: SERVERS },
                 { label: '種族 RACE', field: 'race', type: 'select', options: RACES },
                 { label: '職業 JOB', field: 'job', type: 'select', options: JOBS },
                 { label: '性別 GENDER', field: 'gender', placeholder: '男 / 女' },

@@ -156,7 +156,7 @@ const Card = forwardRef<HTMLDivElement, CardProps>(({ info, traits, visibleTrait
             { label: '種族', val: info.race },
             { label: '性別', val: info.gender },
             { label: '職業', val: info.job },
-            { label: '週期', val: info.age },
+            { label: '年紀', val: info.age },
             { label: '身高', val: info.height },
             { label: '性向', val: info.orientation },
             { label: '出生', val: info.birthplace }
@@ -170,14 +170,14 @@ const Card = forwardRef<HTMLDivElement, CardProps>(({ info, traits, visibleTrait
 
         {info.personality && (
           <div className="space-y-1">
-            <h3 style={{ fontSize: `${9.5 * fontScale}px` }} className="font-bold uppercase tracking-widest opacity-40 tech-font">認知模式 //</h3>
+            <h3 style={{ fontSize: `${9.5 * fontScale}px` }} className="font-bold uppercase tracking-widest opacity-40 tech-font">性格描述 //</h3>
             <p style={{ fontSize: `${12.5 * fontScale}px` }} className="leading-snug italic opacity-85">{info.personality}</p>
           </div>
         )}
 
         {info.background && (
           <div className="space-y-1">
-            <h3 style={{ fontSize: `${9.5 * fontScale}px` }} className="font-bold uppercase tracking-widest opacity-40 tech-font">歷史紀錄 //</h3>
+            <h3 style={{ fontSize: `${9.5 * fontScale}px` }} className="font-bold uppercase tracking-widest opacity-40 tech-font">背景故事 //</h3>
             <p style={{ fontSize: `${12 * fontScale}px` }} className="leading-snug opacity-75 border-l border-white/10 pl-3">{info.background}</p>
           </div>
         )}
