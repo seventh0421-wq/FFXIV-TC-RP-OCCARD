@@ -113,11 +113,10 @@ const App: React.FC = () => {
     if (wrapper) wrapper.style.transform = 'none';
 
     const scrollArea = cardRef.current.querySelector('.card-content-scroll') as HTMLElement;
+    const prevScrollTop = scrollArea?.scrollTop ?? 0;
     if (scrollArea) {
       scrollArea.scrollTop = 0;
-      scrollArea.style.overflowY = 'visible';
-      scrollArea.style.position = 'absolute';  // ← 新增
-      scrollArea.style.height = 'auto';        // ← 新增，讓高度自動撐開
+      scrollArea.style.overflowY = 'visible'; // ← 這行是新增的
     }
 
     await new Promise(r => setTimeout(r, 100));
@@ -127,7 +126,7 @@ const App: React.FC = () => {
         useCORS: true,
         allowTaint: false,
         backgroundColor: null,
-        scale: window.devicePixelRatio * 2 || 4,
+        scale: window.devicePixelRatio * 2 || 4,  // 原本是 || 2，乘以 2 讓解析度翻倍
         scrollX: 0,
         scrollY: 0,
       });
@@ -139,9 +138,8 @@ const App: React.FC = () => {
     } finally {
       if (wrapper) wrapper.style.transform = prevTransform;
       if (scrollArea) {
-        scrollArea.style.overflowY = 'auto';
-        scrollArea.style.position = '';
-        scrollArea.style.height = '';
+        scrollArea.style.overflowY = 'auto'; // ← 截完還原
+        scrollArea.scrollTop = prevScrollTop;
       }
     }
   };
