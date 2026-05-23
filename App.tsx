@@ -106,16 +106,44 @@ const App: React.FC = () => {
   };
 
   const handleExport = async () => {
-    if (cardRef.current) {
-      const canvas = await (window as any).html2canvas(cardRef.current, {
+    if (!cardRef.current) return;
+
+    const original = cardRef.current;
+    const clone = original.cloneNode(true) as HTMLElement;
+
+    // 脫離 transform 影響，放到畫面外獨立渲染
+    clone.style.position = 'fixed';
+    clone.style.top = '-9999px';
+    clone.style.left = '0px';
+    clone.style.transform = 'none';
+    clone.style.zIndex = '-1';
+    document.body.appendChild(clone);
+
+    // 把 clone 內的捲動區域強制歸零（解決 overflowY: auto 的問題）
+    const scrollArea = clone.querySelector('.card-content-scroll') as HTMLElement;
+    if (scrollArea) scrollArea.scrollTop = 0;
+
+    // 等 DOM 完成渲染
+    await new Promise(r => setTimeout(r, 50));
+
+    try {
+      const canvas = await (window as any).html2canvas(clone, {
         useCORS: true,
+        allowTaint: false,
         backgroundColor: null,
-        scale: 2
+        scale: window.devicePixelRatio || 2,
+        scrollX: 0,
+        scrollY: 0,
+        width: orientation === 'landscape' ? 800 : 450,
+        height: orientation === 'landscape' ? 450 : 800,
       });
+
       const link = document.createElement('a');
       link.download = `FF14_角色卡_${info.name || 'Export'}.png`;
       link.href = canvas.toDataURL('image/png');
       link.click();
+    } finally {
+      document.body.removeChild(clone);
     }
   };
 
