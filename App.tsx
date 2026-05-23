@@ -1,5 +1,6 @@
 
 import React, { useState, useRef, useEffect, useMemo } from 'react';
+import { toPng } from 'html-to-image';
 import Card from './components/Card';
 import TraitSelector from './components/SliderInput';
 import { CharacterInfo, Traits, Orientation, ImageTransform, FrameStyle, BorderStyle } from './types';
@@ -122,19 +123,17 @@ const App: React.FC = () => {
     await new Promise(r => setTimeout(r, 100));
 
     try {
-      const canvas = await (window as any).html2canvas(cardRef.current, {
-        useCORS: true,
-        allowTaint: false,
-        backgroundColor: null,
-        scale: window.devicePixelRatio * 2 || 4,  // 原本是 || 2，乘以 2 讓解析度翻倍
-        scrollX: 0,
-        scrollY: 0,
+      const dataUrl = await toPng(cardRef.current, {
+        cacheBust: true,
+        pixelRatio: window.devicePixelRatio * 2 || 4,  // 乘以 2 讓解析度翻倍
       });
 
       const link = document.createElement('a');
       link.download = `FF14_角色卡_${info.name || 'Export'}.png`;
-      link.href = canvas.toDataURL('image/png');
+      link.href = dataUrl;
       link.click();
+    } catch (error) {
+      console.error('Export failed using html-to-image:', error);
     } finally {
       if (wrapper) wrapper.style.transform = prevTransform;
       if (scrollArea) {
