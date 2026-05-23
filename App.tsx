@@ -70,6 +70,7 @@ const App: React.FC = () => {
   const [image, setImage] = useState<string | null>(null);
   const [transform, setTransform] = useState<ImageTransform>(initialTransform);
   const [isImproving, setIsImproving] = useState(false);
+  const [isExporting, setIsExporting] = useState(false);
   const [previewScale, setPreviewScale] = useState(1);
   const [showConsent, setShowConsent] = useState(true);
 
@@ -108,6 +109,7 @@ const App: React.FC = () => {
 
   const handleExport = async () => {
     if (!cardRef.current) return;
+    setIsExporting(true);
 
     const wrapper = cardRef.current.parentElement;
     const prevTransform = wrapper?.style.transform ?? '';
@@ -120,7 +122,7 @@ const App: React.FC = () => {
       scrollArea.style.overflowY = 'visible'; // ← 這行是新增的
     }
 
-    await new Promise(r => setTimeout(r, 100));
+    await new Promise(r => setTimeout(r, 400));
 
     try {
       const dataUrl = await toPng(cardRef.current, {
@@ -140,6 +142,7 @@ const App: React.FC = () => {
         scrollArea.style.overflowY = 'auto'; // ← 截完還原
         scrollArea.scrollTop = prevScrollTop;
       }
+      setIsExporting(false);
     }
   };
 
@@ -191,14 +194,14 @@ const App: React.FC = () => {
   const CharacterCounter = ({ current, max }: { current: number, max: number }) => {
     const isOver = current >= max;
     return (
-      <div className={`text-[12px] text-right mt-1 font-mono ${isOver ? 'text-red-400' : 'text-slate-500'}`}>
+      <div className={`text-[14px] text-right mt-1 font-mono ${isOver ? 'text-red-400' : 'text-white'}`}>
         [{current.toString().padStart(3, '0')} / {max}]
       </div>
     );
   };
 
   return (
-    <div className="min-h-screen bg-transparent relative z-10 text-slate-200">
+    <div className="min-h-screen bg-transparent relative z-10 text-white">
       {/* 同意視窗 Modal */}
       {showConsent && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-950/90 backdrop-blur-xl">
@@ -208,7 +211,7 @@ const App: React.FC = () => {
               <span className="mr-3">■</span> 使用注意事項 USAGE_NOTICE
             </h2>
             
-            <div className="space-y-6 text-slate-300 leading-relaxed text-base">
+            <div className="space-y-6 text-white leading-relaxed text-base">
               <div className="flex gap-4">
                 <div className="text-cyan-500 font-bold tech-font mt-1">01</div>
                 <div>
@@ -243,15 +246,50 @@ const App: React.FC = () => {
             </div>
 
             <div className="mt-8 pt-6 border-t border-slate-800 flex items-center justify-between">
-              <div className="text-[12px] text-slate-500 tech-font">
+              <div className="text-[14px] text-white tech-font">
                 作者：閻羅@奧汀
               </div>
               <button
                 onClick={() => setShowConsent(false)}
-                className="bg-cyan-500 hover:bg-cyan-400 text-black px-10 py-3 tech-font font-bold transition-all shadow-[0_0_20px_rgba(0,242,255,0.4)] hover:scale-105 active:scale-95 text-lg"
+                className="bg-cyan-500 hover:bg-cyan-400 text-black px-10 py-3 tech-font font-bold transition-all shadow-[0_0_20px_rgba(0,242,255,0.4)] hover:scale-105 active:scale-95 text-[14px]"
               >
                 我同意並進入系統
               </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* 匯出中 Modal overlay */}
+      {isExporting && (
+        <div className="fixed inset-0 z-[110] flex items-center justify-center p-4 bg-slate-950/95 backdrop-blur-md">
+          <div className="max-w-md w-full bg-slate-900 border-2 border-cyan-400 shadow-[0_0_50px_rgba(0,242,255,0.4)] p-8 rounded-lg relative overflow-hidden text-center">
+            {/* Holographic scanner line animation */}
+            <div className="absolute top-0 left-0 w-full h-[2px] bg-cyan-400 shadow-[0_0_10px_rgba(0,242,255,1)] animate-bounce"></div>
+            
+            {/* Spinning/pulsing element */}
+            <div className="relative w-20 h-20 mx-auto mb-6 flex items-center justify-center">
+              <div className="absolute inset-0 rounded-full border-4 border-cyan-900/30 border-t-cyan-400 animate-spin"></div>
+              <span className="text-3xl animate-pulse">🔮</span>
+            </div>
+
+            <h3 className="text-xl font-bold mb-2 tech-font text-cyan-400 tracking-[0.2em] uppercase">角色卡下載中 EXPORTING...</h3>
+            <p className="text-sm text-white mb-4">正在處理高畫質渲染與影像生成，請稍候。</p>
+            
+            <div className="space-y-2 text-left font-mono text-xs text-cyan-200 bg-black/60 p-4 rounded border border-cyan-950/50">
+              <div className="flex justify-between">
+                <span>[PROCESS_STATUS]</span>
+                <span className="animate-pulse text-cyan-400">EXECUTING</span>
+              </div>
+              <div className="flex justify-between">
+                <span>[RENDER_SCALE]</span>
+                <span>2x RESOLUTION (HIGH POWER)</span>
+              </div>
+              <div className="flex justify-between">
+                <span>[LAYER_COMP]</span>
+                <span>MERGING HIGH-RES LAYERS</span>
+              </div>
+              <div className="mt-2 text-white/50 italic text-[10px]">※ 請勿關閉本頁面，下載作業即將在數秒內自動開始。</div>
             </div>
           </div>
         </div>
@@ -266,7 +304,7 @@ const App: React.FC = () => {
             </div>
             <div>
               <h1 className="text-2xl font-bold tracking-widest tech-font text-white">FFXIV TC RP CARD｜水晶名片</h1>
-              <p className="text-[11px] text-cyan-500 font-mono tracking-tighter uppercase">正在初始化安全連接... v3.5.0</p>
+              <p className="text-[14px] text-cyan-500 font-mono tracking-tighter uppercase">正在初始化安全連接... v3.5.0</p>
             </div>
           </div>
           <button
@@ -274,7 +312,7 @@ const App: React.FC = () => {
             className="group relative px-10 py-3 overflow-hidden bg-transparent border border-cyan-400 text-cyan-400 rounded-sm font-bold tech-font hover:bg-cyan-400 hover:text-black transition-all duration-300 shadow-[0_0_10px_rgba(0,242,255,0.2)]"
           >
             <span className="relative z-10 flex items-center gap-2">
-               <span className="text-sm">下載角色卡 DATA_EXPORT</span>
+               <span className="text-[14px]">下載角色卡 DATA_EXPORT</span>
             </span>
             <div className="absolute inset-0 bg-cyan-400 -translate-x-full group-hover:translate-x-0 transition-transform duration-300 z-0"></div>
           </button>
@@ -296,7 +334,7 @@ const App: React.FC = () => {
                 <button
                   key={o}
                   onClick={() => setOrientation(o as any)}
-                  className={`py-2 text-[12px] tech-font border transition-all ${orientation === o ? 'bg-cyan-500 text-black border-cyan-400' : 'bg-slate-800/50 text-slate-500 border-slate-700 hover:border-cyan-700'}`}
+                  className={`py-2 text-[14px] tech-font border transition-all ${orientation === o ? 'bg-cyan-500 text-black border-cyan-400' : 'bg-slate-800/50 text-white border-slate-700 hover:border-cyan-700'}`}
                 >
                   {o === 'portrait' ? '直式 PORTRAIT' : '橫式 LANDSCAPE'}
                 </button>
@@ -305,13 +343,13 @@ const App: React.FC = () => {
             
             <div className="space-y-6">
               <div className="space-y-2">
-                <label className="text-[11px] text-slate-500 tech-font uppercase">風格預設 PRESET_SKINS</label>
+                <label className="text-[14px] text-white tech-font uppercase">風格預設 PRESET_SKINS</label>
                 <div className="grid grid-cols-2 gap-2">
                   {FRAME_STYLES.map(s => (
                     <button
                       key={s.id}
                       onClick={() => selectPresetStyle(s)}
-                      className={`p-3 rounded-sm text-[12px] tech-font border transition-all truncate ${style.id === s.id ? 'bg-slate-700 border-white text-white' : 'bg-slate-950/80 border-slate-800 text-slate-400'}`}
+                      className={`p-3 rounded-sm text-[14px] tech-font border transition-all truncate ${style.id === s.id ? 'bg-slate-700 border-white text-white' : 'bg-slate-950/80 border-slate-800 text-white'}`}
                     >
                       {s.name}
                     </button>
@@ -320,14 +358,14 @@ const App: React.FC = () => {
               </div>
 
               <div className="space-y-2">
-                <label className="text-[11px] text-slate-500 tech-font uppercase">卡片字體 CARD_FONT</label>
+                <label className="text-[14px] text-white tech-font uppercase">卡片字體 CARD_FONT</label>
                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
                   {FONT_OPTIONS.map(font => (
                     <button
                       key={font.id}
                       onClick={() => updateInfo('selectedFont', font.family)}
                       style={{ fontFamily: font.family }}
-                      className={`p-2.5 text-[11px] border transition-all ${info.selectedFont === font.family ? 'bg-cyan-500/20 border-cyan-400 text-cyan-200' : 'bg-slate-950/80 border-slate-800 text-slate-500'}`}
+                      className={`p-2.5 text-[14px] border transition-all ${info.selectedFont === font.family ? 'bg-cyan-500/20 border-cyan-400 text-cyan-200' : 'bg-slate-950/80 border-slate-800 text-white'}`}
                     >
                       {font.name}
                     </button>
@@ -336,21 +374,21 @@ const App: React.FC = () => {
               </div>
 
               <div className="pt-4 border-t border-slate-800 space-y-4">
-                <h3 className="text-[11px] tech-font text-cyan-400/80 uppercase">進階外觀自訂 ADV_ADJUST</h3>
+                <h3 className="text-[14px] tech-font text-cyan-400/80 uppercase">進階外觀自訂 ADV_ADJUST</h3>
                 
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-1">
-                    <label className="text-[10px] text-slate-500 tech-font">邊框類型 BORDER_TYPE</label>
+                    <label className="text-[14px] text-white tech-font">邊框類型 BORDER_TYPE</label>
                     <select
                       value={info.customBorderStyle}
                       onChange={(e) => updateInfo('customBorderStyle', e.target.value)}
-                      className="w-full bg-slate-950 border border-slate-800 rounded p-2 text-[12px] text-cyan-200 focus:border-cyan-500 outline-none tech-font"
+                      className="w-full bg-slate-950 border border-slate-800 rounded p-2 text-[14px] text-white focus:border-cyan-500 outline-none tech-font"
                     >
                       {BORDER_TYPES.map(bt => <option key={bt.id} value={bt.id}>{bt.name}</option>)}
                     </select>
                   </div>
                   <div className="space-y-1">
-                    <label className="text-[10px] text-slate-500 tech-font">邊框粗細 THICKNESS</label>
+                    <label className="text-[14px] text-white tech-font">邊框粗細 THICKNESS</label>
                     <input
                       type="range"
                       min="1"
@@ -364,8 +402,8 @@ const App: React.FC = () => {
 
                 <div className="space-y-2">
                   <div className="flex justify-between items-center">
-                    <label className="text-[10px] text-slate-500 tech-font">卡片文字縮放 FONT_SCALE</label>
-                    <span className="text-[10px] text-cyan-400 font-mono">{info.cardFontSize}%</span>
+                    <label className="text-[14px] text-white tech-font">卡片文字縮放 FONT_SCALE</label>
+                    <span className="text-[14px] text-white font-mono">{info.cardFontSize}%</span>
                   </div>
                   <input
                     type="range"
@@ -393,7 +431,7 @@ const App: React.FC = () => {
                           onChange={(e) => updateInfo(item.field as any, e.target.value)}
                           className="w-7 h-7 rounded-full bg-transparent border border-slate-700 cursor-pointer overflow-hidden"
                         />
-                        <label className="text-[10px] text-slate-500 tech-font">{item.label}</label>
+                        <label className="text-[14px] text-white tech-font">{item.label}</label>
                      </div>
                    ))}
                 </div>
@@ -416,7 +454,7 @@ const App: React.FC = () => {
                 />
                 <label htmlFor="image-upload" className="flex flex-col items-center justify-center border-2 border-dashed border-purple-900/50 bg-slate-950/50 p-10 cursor-pointer hover:border-purple-400 transition-all rounded-lg group">
                   <span className="text-4xl mb-3 opacity-50 group-hover:opacity-100 transition-opacity">📷</span>
-                  <span className="text-[12px] tech-font text-purple-400 uppercase font-bold tracking-widest">載入角色圖像 LOAD_IDENTITY</span>
+                  <span className="text-[14px] tech-font text-white uppercase font-bold tracking-widest">載入角色圖像 LOAD_IDENTITY</span>
                 </label>
               </div>
               
@@ -430,8 +468,8 @@ const App: React.FC = () => {
                   ].map(ctrl => (
                     <div key={ctrl.field} className="space-y-3">
                       <div className="flex justify-between">
-                        <label className="text-[10px] text-slate-500 tech-font">{ctrl.label}</label>
-                        <span className="text-[10px] text-purple-400 font-mono">{(transform as any)[ctrl.field]}</span>
+                        <label className="text-[14px] text-white tech-font">{ctrl.label}</label>
+                        <span className="text-[14px] text-white font-mono">{(transform as any)[ctrl.field]}</span>
                       </div>
                       <input
                         type="range"
@@ -467,12 +505,12 @@ const App: React.FC = () => {
                 { label: '出生地 BIRTH', field: 'birthplace', placeholder: '出生城市' },
               ].map(input => (
                 <div key={input.field} className="space-y-1.5">
-                  <label className="text-[10px] text-slate-500 tech-font">{input.label}</label>
+                  <label className="text-[14px] text-white tech-font">{input.label}</label>
                   {input.type === 'select' ? (
                     <select
                       value={(info as any)[input.field]}
                       onChange={(e) => updateInfo(input.field as any, e.target.value)}
-                      className="w-full bg-slate-950 border border-slate-800 rounded p-2.5 text-[13px] text-emerald-100 focus:border-emerald-500 outline-none font-mono"
+                      className="w-full bg-slate-950 border border-slate-800 rounded p-2.5 text-[14px] text-white focus:border-emerald-500 outline-none font-mono"
                     >
                       <option value="">選擇 {input.label.split(' ')[0]}</option>
                       {input.options?.map(opt => <option key={opt} value={opt}>{opt}</option>)}
@@ -483,7 +521,7 @@ const App: React.FC = () => {
                       placeholder={input.placeholder}
                       value={(info as any)[input.field]}
                       onChange={(e) => updateInfo(input.field as any, e.target.value)}
-                      className="w-full bg-slate-950 border border-slate-800 rounded p-2.5 text-[13px] text-emerald-100 focus:border-emerald-500 outline-none font-mono placeholder:opacity-20"
+                      className="w-full bg-slate-950 border border-slate-800 rounded p-2.5 text-[14px] text-white focus:border-emerald-500 outline-none font-mono placeholder:opacity-20"
                     />
                   )}
                 </div>
@@ -493,11 +531,11 @@ const App: React.FC = () => {
             <div className="mt-8 space-y-6">
               <div className="space-y-2">
                 <div className="flex justify-between items-center mb-1">
-                  <label className="text-[10px] text-slate-500 tech-font">性格描述 PERSONALITY</label>
+                  <label className="text-[14px] text-white tech-font">性格描述 PERSONALITY</label>
                   <button 
                     onClick={() => handleImproveText('personality')}
                     disabled={isImproving || !info.personality}
-                    className="text-[10px] tech-font bg-emerald-950 text-emerald-400 border border-emerald-800 px-3 py-1 rounded hover:bg-emerald-400 hover:text-black transition-all disabled:opacity-30"
+                    className="text-[14px] tech-font bg-emerald-950 text-emerald-400 border border-emerald-800 px-3 py-1 rounded hover:bg-emerald-400 hover:text-black transition-all disabled:opacity-30"
                   >
                     {isImproving ? '同步中 SYNCING...' : 'AI 潤飾 ENHANCE'}
                   </button>
@@ -508,18 +546,18 @@ const App: React.FC = () => {
                   maxLength={LIMITS.personality}
                   value={info.personality}
                   onChange={(e) => updateInfo('personality', e.target.value)}
-                  className="w-full bg-slate-950 border border-slate-800 rounded p-3 text-[13px] text-emerald-100 focus:border-emerald-500 outline-none resize-none font-mono"
+                  className="w-full bg-slate-950 border border-slate-800 rounded p-3 text-[14px] text-white focus:border-emerald-500 outline-none resize-none font-mono"
                 />
                 <CharacterCounter current={info.personality.length} max={LIMITS.personality} />
               </div>
               
               <div className="space-y-2">
                 <div className="flex justify-between items-center mb-1">
-                  <label className="text-[10px] text-slate-500 tech-font">背景故事 BACKGROUND</label>
+                  <label className="text-[14px] text-white tech-font">背景故事 BACKGROUND</label>
                   <button 
                     onClick={() => handleImproveText('background')}
                     disabled={isImproving || !info.background}
-                    className="text-[10px] tech-font bg-emerald-950 text-emerald-400 border border-emerald-800 px-3 py-1 rounded hover:bg-emerald-400 hover:text-black transition-all disabled:opacity-30"
+                    className="text-[14px] tech-font bg-emerald-950 text-emerald-400 border border-emerald-800 px-3 py-1 rounded hover:bg-emerald-400 hover:text-black transition-all disabled:opacity-30"
                   >
                     {isImproving ? '同步中 SYNCING...' : 'AI 潤飾 ENHANCE'}
                   </button>
@@ -530,28 +568,28 @@ const App: React.FC = () => {
                   maxLength={LIMITS.background}
                   value={info.background}
                   onChange={(e) => updateInfo('background', e.target.value)}
-                  className="w-full bg-slate-950 border border-slate-800 rounded p-3 text-[13px] text-emerald-100 focus:border-emerald-500 outline-none resize-none font-mono"
+                  className="w-full bg-slate-950 border border-slate-800 rounded p-3 text-[14px] text-white focus:border-emerald-500 outline-none resize-none font-mono"
                 />
                 <CharacterCounter current={info.background.length} max={LIMITS.background} />
               </div>
 
               <div className="grid grid-cols-2 gap-6">
                 <div className="space-y-2">
-                  <label className="text-[10px] text-slate-500 tech-font">喜歡的東西 LIKES</label>
+                  <label className="text-[14px] text-white tech-font">喜歡的東西 LIKES</label>
                   <input
                     type="text"
                     value={info.likes}
                     onChange={(e) => updateInfo('likes', e.target.value)}
-                    className="w-full bg-slate-950 border border-slate-800 rounded p-2.5 text-[13px] text-emerald-100 focus:border-emerald-500 outline-none font-mono"
+                    className="w-full bg-slate-950 border border-slate-800 rounded p-2.5 text-[14px] text-white focus:border-emerald-500 outline-none font-mono"
                   />
                 </div>
                 <div className="space-y-2">
-                  <label className="text-[10px] text-slate-500 tech-font">討厭的東西 DISLIKES</label>
+                  <label className="text-[14px] text-white tech-font">討厭的東西 DISLIKES</label>
                   <input
                     type="text"
                     value={info.dislikes}
                     onChange={(e) => updateInfo('dislikes', e.target.value)}
-                    className="w-full bg-slate-950 border border-slate-800 rounded p-2.5 text-[13px] text-emerald-100 focus:border-emerald-500 outline-none font-mono"
+                    className="w-full bg-slate-950 border border-slate-800 rounded p-2.5 text-[14px] text-white focus:border-emerald-500 outline-none font-mono"
                   />
                 </div>
               </div>
@@ -564,11 +602,11 @@ const App: React.FC = () => {
                 <h2 className="text-base font-bold flex items-center text-amber-400 tech-font tracking-widest uppercase">
                   <span className="mr-2">■</span> 特質分析 TRAIT_ANALYTICS
                 </h2>
-                <div className="text-[11px] font-mono px-3 py-1 rounded bg-slate-950 text-amber-600">
+                <div className="text-[14px] font-mono px-3 py-1 rounded bg-slate-950 text-white">
                   {visibleTraits.size} 已顯示
                 </div>
               </div>
-              <p className="text-[11px] text-amber-600/60 mt-3 italic">※ 您可以點擊刪除鈕隱藏不需要顯示的特質，中間值亦可正常顯示。</p>
+              <p className="text-[14px] text-white/60 mt-3 italic">※ 您可以點擊刪除鈕隱藏不需要顯示的特質，中間值亦可正常顯示。</p>
             </div>
             
             <div className="space-y-2">
@@ -603,7 +641,7 @@ const App: React.FC = () => {
         <div className="lg:col-span-8 relative" ref={previewContainerRef}>
           <div className="sticky top-24 flex flex-col items-center w-full min-h-[600px] p-10 bg-slate-900/30 rounded-lg border border-cyan-500/20 backdrop-blur-sm shadow-[0_0_50px_rgba(0,0,0,0.5)]">
             <div className="mb-8 w-full flex justify-between items-center border-b border-cyan-500/10 pb-4">
-              <h3 className="text-cyan-500 text-[12px] tech-font tracking-[0.3em] uppercase">全像投影渲染中 VISUALIZING...</h3>
+              <h3 className="text-cyan-500 text-[14px] tech-font tracking-[0.3em] uppercase">全像投影渲染中 VISUALIZING...</h3>
               <div className="flex gap-3">
                 <div className="w-2.5 h-2.5 rounded-full bg-cyan-400 animate-pulse"></div>
                 <div className="w-2.5 h-2.5 rounded-full bg-cyan-400 animate-pulse delay-75"></div>
@@ -618,6 +656,7 @@ const App: React.FC = () => {
                 transition: 'transform 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
                 width: orientation === 'landscape' ? '800px' : '450px',
                 height: orientation === 'landscape' ? '450px' : '800px',
+                overflow: 'visible',
               }}
               className="relative shadow-[0_0_100px_rgba(0,242,255,0.15)] group"
             >
@@ -641,7 +680,7 @@ const App: React.FC = () => {
       </main>
 
       {/* Decorative footer elements */}
-      <footer className="fixed bottom-0 left-0 w-full p-3 bg-slate-900/80 border-t border-cyan-500/10 text-[10px] font-mono text-slate-600 flex justify-between z-50 tech-font">
+      <footer className="fixed bottom-0 left-0 w-full p-3 bg-slate-900/80 border-t border-cyan-500/10 text-[14px] font-mono text-white flex justify-between z-50 tech-font">
          <div className="flex gap-6">
            <span>連線狀態: 最佳 OPTIMAL</span>
            <span>延遲: 14ms</span>

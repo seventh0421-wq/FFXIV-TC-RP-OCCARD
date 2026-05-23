@@ -17,17 +17,17 @@ const TraitSelector: React.FC<TraitSelectorProps> = ({ label, value, onChange, l
   return (
     <div className={`flex flex-col space-y-2 mb-4 group transition-opacity ${!isVisible ? 'opacity-40' : 'opacity-100'}`}>
       <div className="flex justify-between items-center">
-        <label className="text-[11px] font-bold text-slate-400 tech-font tracking-widest">{label}</label>
+        <label className="text-[14px] font-bold text-white tech-font tracking-widest">{label}</label>
         <button 
           onClick={onToggleVisibility}
-          className={`text-[10px] px-2 py-0.5 border rounded-sm transition-all tech-font ${isVisible ? 'border-rose-900/50 text-rose-500 hover:bg-rose-500 hover:text-white' : 'border-emerald-900/50 text-emerald-500 hover:bg-emerald-500 hover:text-white'}`}
+          className={`text-[14px] px-2 py-0.5 border rounded-sm transition-all tech-font ${isVisible ? 'border-rose-900/50 text-rose-500 hover:bg-rose-500 hover:text-white' : 'border-emerald-900/50 text-emerald-500 hover:bg-emerald-500 hover:text-white'}`}
         >
           {isVisible ? '隱藏 DELETE' : '顯示 RESTORE'}
         </button>
       </div>
       
       <div className="flex items-center justify-between bg-black/40 p-2 rounded border border-slate-800 transition-colors group-hover:border-amber-900/50">
-        <span className="text-[10px] w-14 text-right text-slate-600 tech-font leading-tight pr-1 uppercase">{leftLabel}</span>
+        <span className="text-[14px] w-14 text-right text-white tech-font leading-tight pr-1 uppercase">{leftLabel}</span>
         
         <div className="flex items-center justify-between flex-1 px-4 relative">
           {/* Connector Line with glow */}
@@ -47,7 +47,7 @@ const TraitSelector: React.FC<TraitSelectorProps> = ({ label, value, onChange, l
           ))}
         </div>
         
-        <span className="text-[10px] w-14 text-left text-slate-600 tech-font leading-tight pl-1 uppercase">{rightLabel}</span>
+        <span className="text-[14px] w-14 text-left text-white tech-font leading-tight pl-1 uppercase">{rightLabel}</span>
       </div>
     </div>
   );
