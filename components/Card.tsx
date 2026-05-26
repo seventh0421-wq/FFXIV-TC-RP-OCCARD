@@ -117,7 +117,7 @@ const Card = forwardRef<HTMLDivElement, CardProps>(({ info, traits, visibleTrait
             style={{
               width: '100%',
               height: '100%',
-              objectFit: 'cover',
+              objectFit: 'contain',
               transform: `translate(${transform.x}px, ${transform.y}px) scale(${transform.scale}) rotate(${transform.rotate}deg)`,
               transformOrigin: 'center center'
             }}
