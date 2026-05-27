@@ -4,8 +4,7 @@ import { toPng } from 'html-to-image';
 import Card from './components/Card';
 import TraitSelector from './components/SliderInput';
 import { CharacterInfo, Traits, Orientation, ImageTransform, FrameStyle, BorderStyle } from './types';
-import { FRAME_STYLES, JOBS, RACES, FONT_OPTIONS, BORDER_TYPES, SERVERS } from './constants';
-import { improveDescription } from './services/geminiService';
+import { FRAME_STYLES, RACES, FONT_OPTIONS, BORDER_TYPES, SERVERS } from './constants';
 
 const initialInfo: CharacterInfo = {
   name: '',
@@ -69,7 +68,6 @@ const App: React.FC = () => {
   const [style, setStyle] = useState<FrameStyle>(FRAME_STYLES[0]);
   const [image, setImage] = useState<string | null>(null);
   const [transform, setTransform] = useState<ImageTransform>(initialTransform);
-  const [isImproving, setIsImproving] = useState(false);
   const [isExporting, setIsExporting] = useState(false);
   const [previewScale, setPreviewScale] = useState(1);
   const [showConsent, setShowConsent] = useState(true);
@@ -180,15 +178,6 @@ const App: React.FC = () => {
       next.add(field);
     }
     setVisibleTraits(next);
-  };
-
-  const handleImproveText = async (type: 'personality' | 'background') => {
-    setIsImproving(true);
-    const improved = await improveDescription(info[type], type);
-    const limit = LIMITS[type];
-    const finalResult = improved.length > limit ? improved.substring(0, limit) : improved;
-    updateInfo(type, finalResult);
-    setIsImproving(false);
   };
 
   const CharacterCounter = ({ current, max }: { current: number, max: number }) => {
@@ -505,7 +494,7 @@ const App: React.FC = () => {
                 { label: '角色格言 MOTTO', field: 'motto', placeholder: '輸入角色座右銘' },
                 { label: '伺服器 SERVER', field: 'server', type: 'select', options: SERVERS },
                 { label: '種族 RACE', field: 'race', type: 'select', options: RACES },
-                { label: '職業 JOB', field: 'job', type: 'select', options: JOBS },
+                { label: '職業 JOB', field: 'job', placeholder: '例如: 釤鐮客 / 畫家' },
                 { label: '性別 GENDER', field: 'gender', placeholder: '男 / 女' },
                 { label: '歲數 AGE', field: 'age', placeholder: '歲數' },
                 { label: '身高 HEIGHT', field: 'height', placeholder: 'cm' },
@@ -538,16 +527,7 @@ const App: React.FC = () => {
             
             <div className="mt-8 space-y-6">
               <div className="space-y-2">
-                <div className="flex justify-between items-center mb-1">
-                  <label className="text-[14px] text-white tech-font">性格描述 PERSONALITY</label>
-                  <button 
-                    onClick={() => handleImproveText('personality')}
-                    disabled={isImproving || !info.personality}
-                    className="text-[14px] tech-font bg-emerald-950 text-emerald-400 border border-emerald-800 px-3 py-1 rounded hover:bg-emerald-400 hover:text-black transition-all disabled:opacity-30"
-                  >
-                    {isImproving ? '同步中 SYNCING...' : 'AI 潤飾 ENHANCE'}
-                  </button>
-                </div>
+                <label className="block text-[14px] text-white tech-font mb-1">性格描述 PERSONALITY</label>
                 <textarea
                   placeholder="輸入角色的性格特徵..."
                   rows={4}
@@ -560,16 +540,7 @@ const App: React.FC = () => {
               </div>
               
               <div className="space-y-2">
-                <div className="flex justify-between items-center mb-1">
-                  <label className="text-[14px] text-white tech-font">背景故事 BACKGROUND</label>
-                  <button 
-                    onClick={() => handleImproveText('background')}
-                    disabled={isImproving || !info.background}
-                    className="text-[14px] tech-font bg-emerald-950 text-emerald-400 border border-emerald-800 px-3 py-1 rounded hover:bg-emerald-400 hover:text-black transition-all disabled:opacity-30"
-                  >
-                    {isImproving ? '同步中 SYNCING...' : 'AI 潤飾 ENHANCE'}
-                  </button>
-                </div>
+                <label className="block text-[14px] text-white tech-font mb-1">背景故事 BACKGROUND</label>
                 <textarea
                   placeholder="紀錄角色的過往經歷..."
                   rows={4}
@@ -693,8 +664,12 @@ const App: React.FC = () => {
            <span>連線狀態: 最佳 OPTIMAL</span>
            <span>延遲: 14ms</span>
          </div>
-         <div className="flex gap-6">
+         <div className="flex gap-6 items-center flex-wrap">
            <span>系統時間: {new Date().toLocaleString()}</span>
+           <span>作者: 閻羅@奧汀</span>
+           <a href="https://rp-toolbox.vercel.app/" target="_blank" rel="noopener noreferrer" className="text-cyan-400 hover:text-cyan-300 hover:underline transition-colors">
+             [ RP🧰工具箱 ]
+           </a>
            <span>加密連線已啟動 SECURE</span>
          </div>
       </footer>
