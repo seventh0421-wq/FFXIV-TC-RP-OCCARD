@@ -11,9 +11,10 @@ interface CardProps {
   image: string | null;
   transform: ImageTransform;
   id?: string;
+  imagePosition?: 'left' | 'right';
 }
 
-const Card = forwardRef<HTMLDivElement, CardProps>(({ info, traits, visibleTraits, orientation, style, image, transform, id }, ref) => {
+const Card = forwardRef<HTMLDivElement, CardProps>(({ info, traits, visibleTraits, orientation, style, image, transform, id, imagePosition = 'left' }, ref) => {
   const isPortrait = orientation === 'portrait';
   const fontScale = (info.cardFontSize || 100) / 100;
   
@@ -37,22 +38,25 @@ const Card = forwardRef<HTMLDivElement, CardProps>(({ info, traits, visibleTrait
     fontFamily: info.selectedFont || 'inherit'
   };
 
+  const isImageRight = !isPortrait && imagePosition === 'right';
+
   const imageContainerStyle: React.CSSProperties = {
     position: 'absolute',
     top: 0,
-    left: 0,
+    left: isPortrait ? 0 : (isImageRight ? '65%' : 0),
     width: isPortrait ? '100%' : '35%',
     height: isPortrait ? '40%' : '100%',
     overflow: 'hidden',
     borderBottom: isPortrait ? `1px solid ${borderColor}44` : 'none',
-    borderRight: !isPortrait ? `1px solid ${borderColor}44` : 'none',
+    borderRight: (!isPortrait && !isImageRight) ? `1px solid ${borderColor}44` : 'none',
+    borderLeft: (!isPortrait && isImageRight) ? `1px solid ${borderColor}44` : 'none',
     backgroundColor: '#000'
   };
 
   const contentContainerStyle: React.CSSProperties = {
     position: 'absolute',
     top: isPortrait ? '40%' : 0,
-    left: isPortrait ? 0 : '35%',
+    left: isPortrait ? 0 : (isImageRight ? 0 : '35%'),
     width: isPortrait ? '100%' : '65%',
     height: isPortrait ? '60%' : '100%',
     padding: '1.5rem',

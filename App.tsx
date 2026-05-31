@@ -65,6 +65,7 @@ const App: React.FC = () => {
   const [traits, setTraits] = useState<Traits>(initialTraits);
   const [visibleTraits, setVisibleTraits] = useState<Set<string>>(new Set(['muscles', 'sensitivity', 'athleticism', 'combatRange', 'combatPref']));
   const [orientation, setOrientation] = useState<Orientation>('portrait');
+  const [imagePosition, setImagePosition] = useState<'left' | 'right'>('left');
   const [style, setStyle] = useState<FrameStyle>(FRAME_STYLES[0]);
   const [image, setImage] = useState<string | null>(null);
   const [transform, setTransform] = useState<ImageTransform>(initialTransform);
@@ -337,6 +338,26 @@ const App: React.FC = () => {
                 </button>
               ))}
             </div>
+
+            {orientation === 'landscape' && (
+              <div className="mb-6 space-y-2">
+                <label className="text-[14px] text-white tech-font uppercase">橫式圖片位置 IMAGE_POSITION</label>
+                <div className="grid grid-cols-2 gap-2">
+                  <button
+                    onClick={() => setImagePosition('left')}
+                    className={`py-2 text-[14px] tech-font border transition-all ${imagePosition === 'left' ? 'bg-cyan-500 text-black border-cyan-400 font-bold' : 'bg-slate-800/50 text-white border-slate-700 hover:border-cyan-700'}`}
+                  >
+                    居左 LEFT
+                  </button>
+                  <button
+                    onClick={() => setImagePosition('right')}
+                    className={`py-2 text-[14px] tech-font border transition-all ${imagePosition === 'right' ? 'bg-cyan-500 text-black border-cyan-400 font-bold' : 'bg-slate-800/50 text-white border-slate-700 hover:border-cyan-700'}`}
+                  >
+                    居右 RIGHT
+                  </button>
+                </div>
+              </div>
+            )}
             
             <div className="space-y-6">
               <div className="space-y-2">
@@ -652,6 +673,7 @@ const App: React.FC = () => {
                 image={image}
                 transform={transform}
                 ref={cardRef}
+                imagePosition={imagePosition}
               />
             </div>
           </div>
