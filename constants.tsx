@@ -84,7 +84,7 @@ export const JOBS = [
 ];
 
 export const RACES = [
-  '人族 (Hyur)', '精靈族 (Elezen)', '拉拉肥 (Lalafell)', '貓魅族 (Miqo\'te)',
+  '人族 (Hyur)', '精靈族 (Elezen)', '拉拉菲爾 (Lalafell)', '貓魅族 (Miqo\'te)',
   '魯加族 (Roegadyn)', '敖龍族 (Au Ra)', '維埃拉族 (Viera)', '硌獅族 (Hrothgar)'
 ];
 
